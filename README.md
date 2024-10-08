@@ -1,1 +1,2 @@
-# TicTacToe
+# TicTacToe 
+TODO: Smart unbeatable bot

@@ -32,7 +32,7 @@ namespace TicTacToe
         static Game() { }
         /*----------------------------------------*/
         public static Game Instance { get => _instance; }
-        public bool ShouldClose { get => _should_close; private set => _should_close = value; }
+        public bool ShouldClose { get => _should_close; }
         /*----------------------------------------*/
         public void Update()
         {
@@ -68,12 +68,12 @@ namespace TicTacToe
                 if((sym == 'Y') || (sym == 'y'))
                 {
                     RestartGame();
-                    return;
                 }
                 else
                 {
-                    ShouldClose = true;
+                    _should_close = true;
                 }
+                return;
             }
             //----------------------------------------------------
             ConsoleColor side_color;
@@ -148,6 +148,7 @@ namespace TicTacToe
 
             _processor.Reset();
             _side_to_move = Side.X;
+            _should_close = false;
         }
         /*----------------------------------------*/
         static private void ResizeWindowIfSmall()

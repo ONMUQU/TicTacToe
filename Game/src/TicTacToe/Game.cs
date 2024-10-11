@@ -20,7 +20,6 @@ namespace TicTacToe
         */
         private const int _WIDTH = 22, _HEIGHT = 10;
         private bool _side_to_move = Side.X;
-        private bool _should_close = false;
         /*----------------------------------------*/
         private Game()
         {
@@ -32,7 +31,7 @@ namespace TicTacToe
         static Game() { }
         /*----------------------------------------*/
         public static Game Instance { get => _instance; }
-        public bool ShouldClose { get => _should_close; }
+        public bool ShouldClose { get; private set; }
         /*----------------------------------------*/
         public void Update()
         {
@@ -71,7 +70,7 @@ namespace TicTacToe
                 }
                 else
                 {
-                    _should_close = true;
+                    ShouldClose = true;
                 }
                 return;
             }
@@ -148,7 +147,7 @@ namespace TicTacToe
 
             _processor.Reset();
             _side_to_move = Side.X;
-            _should_close = false;
+            ShouldClose = false;
         }
         /*----------------------------------------*/
         static private void ResizeWindowIfSmall()

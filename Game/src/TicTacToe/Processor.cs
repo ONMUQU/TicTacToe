@@ -6,28 +6,26 @@
         public const bool X = false;
     }
 
+    public enum CellState
+    {
+        Empty,
+        O,
+        X
+    }
+
+    public enum GameState
+    {
+        NotOver,
+        O_wins,
+        X_wins,
+        Draw
+    }
     public class Processor
     {
-        private CellState[][] _data;
-        /*----------------------------------------*/
-        public enum CellState
-        {
-            Empty,
-            O,
-            X
-        }
-        /*----------------------------------------*/
-        public enum GameState
-        {
-            NotOver,
-            O_wins,
-            X_wins,
-            Draw
-        }
+        private CellState[][] _data = new CellState[3][];
         /*----------------------------------------*/
         public Processor()
         {
-            _data = new CellState[3][];
             for(int i = 0; i < 3; ++i)
             {
                 _data[i] = new CellState[3];

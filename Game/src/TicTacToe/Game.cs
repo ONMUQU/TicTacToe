@@ -20,6 +20,7 @@ namespace TicTacToe
         */
         private const int _WIDTH = 22, _HEIGHT = 10;
         private bool _side_to_move = Side.X;
+        private bool _should_close = false;
         /*----------------------------------------*/
         private Game()
         {
@@ -31,65 +32,68 @@ namespace TicTacToe
         static Game() { }
         /*----------------------------------------*/
         public static Game Instance { get => _instance; }
-        public Processor Processor { get => _processor; }
+        public bool ShouldClose { get => _should_close; private set => _should_close = value; }
         /*----------------------------------------*/
         public void Update()
         {
-            if(_processor.CurrentGameState() != Processor.GameState.NotOver)
+            // if game is over
+            if(_processor.CurrentGameState() != GameState.NotOver)
             {
-                Processor.GameState game_state = _processor.CurrentGameState();
-                this.ClearAndDraw();
+                GameState game_state = _processor.CurrentGameState();
+
+                ClearAndDraw();
                 switch(game_state)
                 {
-                    case (Processor.GameState.O_wins):
-                        this.ClearAndDraw();
+                    case (GameState.O_wins):
+                        ClearAndDraw();
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("--GAME OVER O WINS--");
                         break;
-                    case (Processor.GameState.X_wins):
-                        this.ClearAndDraw();
+                    case (GameState.X_wins):
+                        ClearAndDraw();
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("--GAME OVER X WINS--");
                         break;
                     default: // if draw
-                        this.ClearAndDraw();
+                        ClearAndDraw();
                         Console.ForegroundColor = ConsoleColor.Gray;
                         Console.WriteLine("--GAME OVER DRAW--");
                         break;
                 }
+
                 Console.ResetColor();
                 Console.Write("Restart(Y/n): ");
+
                 char sym = Console.ReadKey().KeyChar;
                 if((sym == 'Y') || (sym == 'y'))
                 {
-                    _processor.Reset();
-                    _side_to_move = Side.X;
+                    RestartGame();
                     return;
                 }
                 else
                 {
-                    Environment.Exit(0);
+                    ShouldClose = true;
                 }
             }
             //----------------------------------------------------
-            ConsoleColor color;
+            ConsoleColor side_color;
             if(_side_to_move)
             {
-                color = ConsoleColor.Blue;
+                side_color = ConsoleColor.Blue;
             }
             else
             {
-                color = ConsoleColor.Red;
+                side_color = ConsoleColor.Red;
             }
-            char number;
-            int[] move = new int[2];
+
             {
+                int[] move = [0, 0];
                 int i = 0;
                 while(true)
                 {
-                    this.ClearAndDraw();
+                    ClearAndDraw();
 
-                    Console.ForegroundColor = color;
+                    Console.ForegroundColor = side_color;
                     if(i == 1)
                     {
                         Console.WriteLine("--ENTER XPOS OF MOVE--");
@@ -100,21 +104,11 @@ namespace TicTacToe
                     }
                     Console.ResetColor();
 
-                    number = Console.ReadKey().KeyChar;
-                    this.ResizeIfSmall();
-
-                    if(char.IsNumber(number))
+                    char input = Console.ReadKey().KeyChar;
+                    ResizeWindowIfSmall();
+                    if(int.TryParse(input.ToString(), out move[i]) && ((move[i] <= 3) && (move[i] >= 1)))
                     {
-                        move[i] = int.Parse(number.ToString());
-                        if((move[i] <= 3) && (move[i] >= 1))
-                        {
-                            ++i;
-                        }
-                        else
-                        { // if move is out of bounds
-                            i = 0;
-                            InvalidInputMessage();
-                        }
+                        ++i;
                         if(i == 2)
                         { // if input is taken
                             if(!_processor.TryToMove(_side_to_move, (move[0] - 1), (move[1] - 1)))
@@ -130,13 +124,12 @@ namespace TicTacToe
                         continue; // if cell isn't empty, get move again
                     }
                     else
-                    { // if input is not number
+                    { // if input is not number or number isn't in range
                         InvalidInputMessage();
                     }
-
                 }
             }
-            this.ClearAndDraw();
+            ClearAndDraw();
             _side_to_move = !_side_to_move;
 
             // ----------- Local methods ----------- //
@@ -145,11 +138,19 @@ namespace TicTacToe
                 Console.Clear();
                 Console.WriteLine("  Invalid input!  ");
                 Thread.Sleep(1000);
-                this.ResizeIfSmall();
+                ResizeWindowIfSmall();
             }
         }
         /*----------------------------------------*/
-        private void ResizeIfSmall()
+        private void RestartGame()
+        {
+            ResizeWindowIfSmall();
+
+            _processor.Reset();
+            _side_to_move = Side.X;
+        }
+        /*----------------------------------------*/
+        static private void ResizeWindowIfSmall()
         {
             if((Console.WindowWidth < _WIDTH) || (Console.WindowHeight < _HEIGHT))
             {
@@ -159,10 +160,8 @@ namespace TicTacToe
         /*----------------------------------------*/
         private void ClearAndDraw()
         {
-
-
-            this.ResizeIfSmall();
-            Processor.CellState[][] board = _processor.Board;
+            ResizeWindowIfSmall();
+            CellState[][] board = _processor.Board;
 
             Console.Clear();
 
@@ -189,26 +188,26 @@ namespace TicTacToe
             }
             Console.WriteLine("   +-----+-----+-----+");
             // ----------- Local methods ----------- //
-            char CellToChar(Processor.CellState cell)
+            char CellToChar(CellState cell)
             {
                 switch(cell)
                 {
-                    case (Processor.CellState.O):
+                    case (CellState.O):
                         return 'O';
-                    case (Processor.CellState.X):
+                    case (CellState.X):
                         return 'X';
                 }
                 return ' '; // if CellState.Empty
             };
             //----------------------------------------
-            void ColorCell(Processor.CellState cell)
+            void ColorCell(CellState cell)
             {
                 switch(cell)
                 {
-                    case (Processor.CellState.O):
+                    case (CellState.O):
                         Console.ForegroundColor = ConsoleColor.Blue;
                         return;
-                    case (Processor.CellState.X):
+                    case (CellState.X):
                         Console.ForegroundColor = ConsoleColor.Red;
                         return;
                 }

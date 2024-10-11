@@ -24,7 +24,7 @@ namespace Tests
                 proc.TryToMove(Side.X, 1, 1);
                 proc.TryToMove(Side.X, 2, 2);
 
-                var expected = Processor.GameState.X_wins;
+                var expected = GameState.X_wins;
                 Assert.AreEqual(expected, proc.CurrentGameState());
             }
             proc.Reset();
@@ -33,7 +33,7 @@ namespace Tests
                 proc.TryToMove(Side.O, 0, 1);
                 proc.TryToMove(Side.O, 0, 2);
 
-                var expected = Processor.GameState.O_wins;
+                var expected = GameState.O_wins;
                 Assert.AreEqual(expected, proc.CurrentGameState());
             }
             proc.Reset();
@@ -42,7 +42,7 @@ namespace Tests
                 proc.TryToMove(Side.X, 1, 0);
                 proc.TryToMove(Side.X, 2, 0);
 
-                var expected = Processor.GameState.X_wins;
+                var expected = GameState.X_wins;
                 Assert.AreEqual(expected, proc.CurrentGameState());
             }
             proc.Reset();
@@ -56,7 +56,7 @@ namespace Tests
                 proc.TryToMove(Side.X, 1, 1);
                 proc.TryToMove(Side.X, 2, 1);
                 proc.TryToMove(Side.X, 2, 2);
-                var expected = Processor.GameState.Draw;
+                var expected = GameState.Draw;
                 Assert.AreEqual(expected, proc.CurrentGameState());
             }
             proc.Reset();
@@ -64,7 +64,7 @@ namespace Tests
                 proc.TryToMove(Side.X, 1, 1);
                 proc.TryToMove(Side.O, 1, 0);
 
-                var expected = Processor.GameState.NotOver;
+                var expected = GameState.NotOver;
                 Assert.AreEqual(expected, proc.CurrentGameState());
             }
             proc.Reset();

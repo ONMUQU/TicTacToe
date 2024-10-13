@@ -22,32 +22,29 @@
     }
     public class Processor
     {
-        private CellState[][] _data = new CellState[3][];
         /*----------------------------------------*/
         public Processor()
         {
-            for(int i = 0; i < 3; ++i)
+            Board = new CellState[3][];
+            for(int i = 0; i < Board.GetLength(0); ++i)
             {
-                _data[i] = new CellState[3];
-                _data[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
+                Board[i] = new CellState[3];
+                Board[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
             }
         }
         /*----------------------------------------*/
-        public CellState[][] Board
-        {
-            get => _data;
-        }
+        public CellState[][] Board { get; private set; }
         /*----------------------------------------*/
         public bool TryToMove(bool side, int y, int x)
         {
-            if(_data[y][x] != CellState.Empty)
+            if(Board[y][x] != CellState.Empty)
             {
                 return false;
             }
             else
             {
                 CellState cell = side ? CellState.O : CellState.X;
-                _data[y][x] = cell;
+                Board[y][x] = cell;
             }
             return true;
         }
@@ -73,7 +70,7 @@
         {
             for(int i = 0; i < 3; ++i)
             {
-                _data[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
+                Board[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
             }
         }
         /*----------------------------------------*/
@@ -82,8 +79,8 @@
             CellState cell = side ? CellState.O : CellState.X;
             for(int i = 0; i < 3; ++i)
             {
-                if(((_data[i][0] == cell) && (_data[i][1] == cell) && (_data[i][2] == cell))
-                || ((_data[0][i] == cell) && (_data[1][i] == cell) && (_data[2][i] == cell)))
+                if(((Board[i][0] == cell) && (Board[i][1] == cell) && (Board[i][2] == cell))
+                || ((Board[0][i] == cell) && (Board[1][i] == cell) && (Board[2][i] == cell)))
                 {
                     return true;
                 }
@@ -94,15 +91,15 @@
         private bool CheckDiagonal(bool side)
         {
             CellState cell = side ? CellState.O : CellState.X;
-            return (((_data[0][0] == cell) && (_data[1][1] == cell) && (_data[2][2] == cell))
-                 || ((_data[0][2] == cell) && (_data[1][1] == cell) && (_data[2][0] == cell)));
+            return (((Board[0][0] == cell) && (Board[1][1] == cell) && (Board[2][2] == cell))
+                 || ((Board[0][2] == cell) && (Board[1][1] == cell) && (Board[2][0] == cell)));
         }
         /*----------------------------------------*/
         private bool IsThereEmptyCells()
         {
             for(int i = 0; i < 3; ++i)
             {
-                if(_data[i].Contains(CellState.Empty))
+                if(Board[i].Contains(CellState.Empty))
                     return true;
             }
             return false;

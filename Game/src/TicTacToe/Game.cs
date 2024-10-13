@@ -35,97 +35,52 @@ namespace TicTacToe
         /*----------------------------------------*/
         public void Update()
         {
-            // if game is over
             if(_processor.CurrentGameState() != GameState.NotOver)
-            {
-                GameState game_state = _processor.CurrentGameState();
-
+            { // if game is over
                 ClearAndDraw();
-                switch(game_state)
-                {
-                    case (GameState.O_wins):
-                        ClearAndDraw();
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine("--GAME OVER O WINS--");
-                        break;
-                    case (GameState.X_wins):
-                        ClearAndDraw();
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("--GAME OVER X WINS--");
-                        break;
-                    default: // if draw
-                        ClearAndDraw();
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        Console.WriteLine("--GAME OVER DRAW--");
-                        break;
-                }
+                PrintGameOver();
+                if(!RestartOrClose())
+                    return;
+            }
 
-                Console.ResetColor();
-                Console.Write("Restart(Y/n): ");
+            int[] move = [0, 0];
+            for(int i = 0; i < move.Length;)
+            {
+                ClearAndDraw();
 
-                char sym = Console.ReadKey().KeyChar;
-                if((sym == 'Y') || (sym == 'y'))
+                Console.ForegroundColor = GetColorBySide();
+                if(i == 1)
                 {
-                    RestartGame();
+                    Console.WriteLine("--ENTER XPOS OF MOVE--");
                 }
                 else
                 {
-                    ShouldClose = true;
+                    Console.WriteLine("--ENTER YPOS OF MOVE--");
                 }
-                return;
-            }
-            //----------------------------------------------------
-            ConsoleColor side_color;
-            if(_side_to_move)
-            {
-                side_color = ConsoleColor.Blue;
-            }
-            else
-            {
-                side_color = ConsoleColor.Red;
-            }
+                Console.ResetColor();
 
-            {
-                int[] move = [0, 0];
-                int i = 0;
-                while(true)
+                char input = Console.ReadKey().KeyChar;
+                ResizeWindowIfSmall();
+                if(int.TryParse(input.ToString(), out move[i]) && ((move[i] <= 3) && (move[i] >= 1)))
                 {
-                    ClearAndDraw();
-
-                    Console.ForegroundColor = side_color;
-                    if(i == 1)
-                    {
-                        Console.WriteLine("--ENTER XPOS OF MOVE--");
-                    }
-                    else
-                    {
-                        Console.WriteLine("--ENTER YPOS OF MOVE--");
-                    }
-                    Console.ResetColor();
-
-                    char input = Console.ReadKey().KeyChar;
-                    ResizeWindowIfSmall();
-                    if(int.TryParse(input.ToString(), out move[i]) && ((move[i] <= 3) && (move[i] >= 1)))
-                    {
-                        ++i;
-                        if(i == 2)
-                        { // if input is taken
-                            if(!_processor.TryToMove(_side_to_move, (move[0] - 1), (move[1] - 1)))
-                            { // if cell isn't empty
-                                i = 0;
-                                InvalidInputMessage();
-                            }
-                            else
-                            {
-                                break;
-                            }
+                    ++i; // incrementing the i, it works only here, DON'T MOVE IT
+                    if(i == 2)
+                    { // if input is taken
+                        if(!_processor.TryToMove(_side_to_move, (move[0] - 1), (move[1] - 1)))
+                        { // if cell isn't empty
+                            i = 0;
+                            InvalidInputMessage();
                         }
-                        continue; // if cell isn't empty, get move again
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
-                    { // if input is not number or number isn't in range
-                        InvalidInputMessage();
-                    }
+                    continue; // if cell isn't empty, get move again
+                }
+                else
+                { // if input is not number or number isn't in range
+                    InvalidInputMessage();
                 }
             }
             ClearAndDraw();
@@ -156,6 +111,53 @@ namespace TicTacToe
             {
                 Console.SetWindowSize(_WIDTH, _HEIGHT);
             }
+        }
+        /*----------------------------------------*/
+        private ConsoleColor GetColorBySide()
+        {
+            if(_side_to_move)
+            {
+                return ConsoleColor.Blue;
+            }
+            return ConsoleColor.Red;
+        }
+        /*----------------------------------------*/
+        private void PrintGameOver()
+        {
+            GameState game_state = _processor.CurrentGameState();
+
+            switch(game_state)
+            {
+                case (GameState.O_wins):
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("--GAME OVER O WINS--");
+                    return;
+                case (GameState.X_wins):
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("--GAME OVER X WINS--");
+                    return;
+                case (GameState.Draw):
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine("--GAME OVER DRAW--");
+                    return;
+                default:
+                    return;
+            }
+        }
+        /*----------------------------------------*/
+        private bool RestartOrClose()
+        {
+            ResizeWindowIfSmall();
+            Console.ResetColor();
+            Console.Write("Restart(Y/n): ");
+            char sym = Console.ReadKey().KeyChar;
+            if((sym == 'Y') || (sym == 'y'))
+            {
+                RestartGame();
+                return true;
+            }
+            ShouldClose = true;
+            return false;
         }
         /*----------------------------------------*/
         private void ClearAndDraw()

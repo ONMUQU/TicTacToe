@@ -42,10 +42,25 @@
         public Processor(Processor processor)
         {
             this.Board = new CellState[ROWS][];
-            for(int i = 0; i < Board.GetLength(0); ++i)
+            for(int i = 0; i < this.Board.GetLength(0); ++i)
             {
                 this.Board[i] = new CellState[COLS];
                 Array.Copy(processor.Board[i], this.Board[i], COLS);
+            }
+        }
+        /*----------------------------------------*/
+        public Processor(CellState[][] board)
+        {
+            if((board.GetLength(0) != ROWS) && (board.GetLength(1) != COLS))
+            {
+                throw new ArgumentException("TicTacToe.Processor.Processor(CellState[][] board), board length is invalid");
+            }
+
+            this.Board = new CellState[ROWS][];
+            for(int i = 0; i < this.Board.GetLength(0); ++i)
+            {
+                this.Board[i] = new CellState[COLS];
+                Array.Copy(board[i], this.Board[i], COLS);
             }
         }
         /*----------------------------------------*/

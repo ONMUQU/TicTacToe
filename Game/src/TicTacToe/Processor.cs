@@ -23,17 +23,31 @@
     public class Processor
     {
         /*----------------------------------------*/
+        public CellState[][] Board { get; private set; }
+        // these bros are same
+        public static readonly int BOARD_DIMENSION_LENGTH = 3;
+        public static readonly int ROWS = BOARD_DIMENSION_LENGTH;
+        public static readonly int COLS = BOARD_DIMENSION_LENGTH;
+        /*----------------------------------------*/
         public Processor()
         {
-            Board = new CellState[3][];
+            Board = new CellState[ROWS][];
             for(int i = 0; i < Board.GetLength(0); ++i)
             {
-                Board[i] = new CellState[3];
-                Board[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
+                Board[i] = new CellState[COLS];
+                Board[i] = Enumerable.Repeat(CellState.Empty, ROWS).ToArray();
             }
         }
         /*----------------------------------------*/
-        public CellState[][] Board { get; private set; }
+        public Processor(Processor processor)
+        {
+            this.Board = new CellState[ROWS][];
+            for(int i = 0; i < Board.GetLength(0); ++i)
+            {
+                this.Board[i] = new CellState[COLS];
+                Array.Copy(processor.Board[i], this.Board[i], COLS);
+            }
+        }
         /*----------------------------------------*/
         public bool TryToMove(bool side, int y, int x)
         {
@@ -68,16 +82,16 @@
         /*----------------------------------------*/
         public void Reset()
         {
-            for(int i = 0; i < 3; ++i)
+            for(int i = 0; i < COLS; ++i)
             {
-                Board[i] = Enumerable.Repeat(CellState.Empty, 3).ToArray();
+                Board[i] = Enumerable.Repeat(CellState.Empty, ROWS).ToArray();
             }
         }
         /*----------------------------------------*/
         private bool CheckLines(bool side)
         {
             CellState cell = side ? CellState.O : CellState.X;
-            for(int i = 0; i < 3; ++i)
+            for(int i = 0; i < BOARD_DIMENSION_LENGTH; ++i)
             {
                 if(((Board[i][0] == cell) && (Board[i][1] == cell) && (Board[i][2] == cell))
                 || ((Board[0][i] == cell) && (Board[1][i] == cell) && (Board[2][i] == cell)))
@@ -97,7 +111,7 @@
         /*----------------------------------------*/
         private bool IsThereEmptyCells()
         {
-            for(int i = 0; i < 3; ++i)
+            for(int i = 0; i < ROWS; ++i)
             {
                 if(Board[i].Contains(CellState.Empty))
                     return true;
